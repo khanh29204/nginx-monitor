@@ -120,17 +120,23 @@ impl LogStore {
         let mut rpm: u64 = 0;
 
         for e in &self.entries {
-            *status_map.entry(e.status).or_insert(0) += 1;
-            *ip_map.entry(e.ip.clone()).or_insert(0) += 1;
+            let is_self_ip = matches!(e.ip.as_str(), "127.0.0.1" | "::1");
+            let path = e.url.split('?').next().unwrap_or(&e.url);
+            let is_self_url = path == "/nginx_status";
 
-            // Strip query string for URL grouping
-            let path = e.url.split('?').next().unwrap_or(&e.url).to_string();
-            *url_map.entry(path).or_insert(0) += 1;
+            *status_map.entry(e.status).or_insert(0) += 1;
+
+            if !is_self_ip {
+                *ip_map.entry(e.ip.clone()).or_insert(0) += 1;
+            }
+            if !is_self_url {
+                *url_map.entry(path.to_string()).or_insert(0) += 1;
+            }
 
             total_bytes += e.bytes;
 
             let age = now.signed_duration_since(e.timestamp);
-            if age.num_seconds() <= 60 {
+            if age.num_seconds() <= 60 && !is_self_ip && !is_self_url {
                 rpm += 1;
             }
         }
