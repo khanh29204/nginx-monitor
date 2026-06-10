@@ -7,6 +7,9 @@ pub struct Config {
     pub access_log_path: String,
     pub domain_auth: String,
     pub memory_cap_bytes: usize,
+    /// Comma-separated origins, e.g. "https://monitor.example.com,http://localhost:5173"
+    /// Use "*" to allow all origins.
+    pub cors_origins: Vec<String>,
 }
 
 impl Config {
@@ -21,13 +24,18 @@ impl Config {
             access_log_path: env::var("ACCESS_LOG_PATH")
                 .unwrap_or_else(|_| "/var/log/nginx/access.log".to_string()),
             domain_auth: env::var("DOMAIN_AUTH").expect("DOMAIN_AUTH is required"),
-            // default 70MB
             memory_cap_bytes: env::var("MEMORY_CAP_MB")
                 .unwrap_or_else(|_| "70".to_string())
                 .parse::<usize>()
                 .expect("MEMORY_CAP_MB must be a number")
                 * 1024
                 * 1024,
+            cors_origins: env::var("CORS_ORIGINS")
+                .unwrap_or_else(|_| "*".to_string())
+                .split(',')
+                .map(|s| s.trim().to_string())
+                .filter(|s| !s.is_empty())
+                .collect(),
         }
     }
 }

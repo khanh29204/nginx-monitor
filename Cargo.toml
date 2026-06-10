@@ -21,6 +21,7 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 dotenvy = "0.15"
 sysinfo = "0.30"
 regex = "1"
+tower-http = { version = "0.5", features = ["cors"] }
 
 [profile.release]
 opt-level = 3
