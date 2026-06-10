@@ -1,0 +1,10 @@
+services:
+  nginx-monitor:
+    image: ghrc.io/khanh29204/nginx-monitor:latest
+    container_name: nginx-monitor
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - /var/log/nginx:/var/log/nginx:ro
+    env_file:
+      - .env

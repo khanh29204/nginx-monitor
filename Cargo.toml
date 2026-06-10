@@ -1,0 +1,29 @@
+[package]
+name = "nginx-monitor"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "nginx-monitor"
+path = "src/main.rs"
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+axum = "0.7"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+reqwest = { version = "0.12", features = ["json"] }
+tokio-stream = { version = "0.1", features = ["sync"] }
+futures-util = "0.3"
+chrono = { version = "0.4", features = ["serde"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+dotenvy = "0.15"
+sysinfo = "0.30"
+regex = "1"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
